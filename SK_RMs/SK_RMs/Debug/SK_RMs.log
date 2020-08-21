@@ -1,0 +1,9 @@
+﻿  SK_RMs.cpp
+e:\works\visual studio\sk_rms\sk_rms\sk_rms\sk_rms.cpp(116): warning C4244: '=': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\works\visual studio\sk_rms\sk_rms\sk_rms\sk_rms.cpp(128): warning C4244: '=': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\works\visual studio\sk_rms\sk_rms\sk_rms\sk_rms.cpp(197): warning C4244: '=': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\works\visual studio\sk_rms\sk_rms\sk_rms\sk_rms.cpp(210): warning C4244: '=': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+  正在產生程式碼...
+  正在略過... (未偵測到相關變更)
+  Source.cpp
+  SK_RMs.vcxproj -> E:\Works\Visual Studio\SK_RMs\SK_RMs\Debug\SK_RMs.exe
