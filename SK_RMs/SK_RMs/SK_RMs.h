@@ -26,6 +26,7 @@ public:
 	void InsertR(int index, int value);
 	void Update(int index, int value);
 	void Write(int value);
+	void Read();
 	void BitWrite(int bitvalue);
 	int BitReturn(int idx);
 	friend class SK_RMs;
@@ -42,10 +43,14 @@ public:
 	vector<int> headTable;	//讀寫頭位置
 	vector<SK_RM> RMs;
 	SK_RMs(int _volumn, int _headNumber, int _trackNumber);
-	void RMsLeftShift();							//多軌單位左移
-	void RMsRightShift();							//多軌單位右移
+	void LeftShift();							//多軌單位左移
+	void RightShift();							//多軌單位右移
 	void Shift_Multi(bool direction, int step);		//多軌多位位移
-	void InsertL(int value, int idx);
+	void InsertL(int idx, int value);
+	void InsertR(int idx, int value);
+	void DeleteL(int idx);
+	void DeleteR(int idx);
+	void Update(int idx, int value);
 	void CompleteRead();							//以interleaved的方式讀完整塊二維Racetrack memory
 	int HeadSelector(int idx);
 	bool FindLocation(int headIdx, int bitIdx, int step);

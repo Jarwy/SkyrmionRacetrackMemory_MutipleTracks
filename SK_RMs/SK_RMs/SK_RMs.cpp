@@ -105,6 +105,39 @@ void SK_RM::Write(int value) {
 	}
 }
 
+void SK_RM::Read() {
+	int i = 0;
+	int sum = 0;
+	vector<int> headValue;									//Used to preserve the value of each head.
+	headValue.resize(headTable.size());						//Each head has its own value.
+	for (i = 0; i <bufferSize; i++) {						//¥Îfor°j°éÅýÅª¼gÀYÅª§¹¦Û¤v­t³dªº½d³ò
+		for (int j = headValue.size() - 1; j >= 0; j--) {		//¥Îfor°j°é±N¨C­ÓÅª¼gÀY½ü¹L¤@½ü
+			headValue[j] = headValue[j] + pow(2, headTable[j] - i)*RM[headTable[j]];
+			//Åª¼gÀY[j]²Ö­p­È = Åª¼gÀY[j]²Ö­p­È + 2^(Åª¼gÀY¦ì¸m-¦ì²¾¶q)*Åª¼gÀY­È(0©Î1)
+			//¥Hvolumn = 8, headNumber = 2¬°¨Ò¡G
+			//       3       7        <= Åª¼gÀY¦ì¸m
+			//       ¡õ       ¡õ	      <= Åª¼gÀY
+			//[][][][][][][][]|[][][] <= °O¾ÐÅé
+			// 0 1 2 3 4 5 6 7		  <= ¾­¦¸(Åª¼gÀY¦ì¸m-¦ì²¾¶q)
+		}
+		RightShift();										//¥k²¾
+	}
+	//Åª¼gÀY¦bÅª§¹ªA°È½d³ò¤¤³Ì«á¤@bit«áµL»Ý¦A¦ì²¾¡A¬G«e­±°j°é¤Ö°µ¡A¦ÓÅª³Ì«á¤@bitÃB¥~°µ
+	for (int j = headValue.size() - 1; j >= 0; j--) {			//¥Îfor°j°é±N¨C­ÓÅª¼gÀY½ü¹L¤@½ü
+		headValue[j] = headValue[j] + pow(2, headTable[j] - i)*RM[headTable[j]];
+		//Åª¼gÀY[j]²Ö­p­È = Åª¼gÀY[j]²Ö­p­È + 2^(Åª¼gÀY¦ì¸m-¦ì²¾¶q)*Åª¼gÀY­È(0©Î1)
+	}
+
+	for (i = 0; i <bufferSize; i++) {
+		//­è­è¥k²¾´X¦¸´N­n¥ª²¾´X¦¸¦^¨Ó Á×§K¸ê®Æ¿ò¥¢
+		LeftShift();
+	}
+
+	sum = accumulate(headValue.begin(), headValue.end(), sum);
+	//±N±ý²Ö¥[ªº½d³ò¶Ç¶iaccumulate¨ç¦¡ 
+	cout << sum << endl;
+}
+
 //BitWrite
 void SK_RM::BitWrite(int bitvalue) {
 	SK_RM::InsertL(headTable[NofHead - 1], bitvalue);		//±q§ÀºÝªºÅª¼gÀY¼g¤J³æ¤@bit
@@ -132,13 +165,13 @@ SK_RMs::SK_RMs(int _volumn, int _headNumber, int _trackNumber) {
 	}
 }
 
-void SK_RMs::RMsLeftShift() {
+void SK_RMs::LeftShift() {
 	for (int i = 0; i < trackNumber; i++) {
 		RMs[i].LeftShift();
 	}
 }
 
-void SK_RMs::RMsRightShift() {
+void SK_RMs::RightShift() {
 	for (int i = 0; i < trackNumber; i++) {
 		RMs[i].RightShift();
 	}
@@ -146,10 +179,10 @@ void SK_RMs::RMsRightShift() {
 
 void SK_RMs::Shift_Multi(bool direction, int step) {			//1=>leftshift, 0=>rightShift
 	if (direction) {
-		for (int i = 0; i < step; i++) { RMsLeftShift(); }
+		for (int i = 0; i < step; i++) { LeftShift(); }
 	}
 	else {
-		for (int i = 0; i < step; i++) { RMsRightShift(); }
+		for (int i = 0; i < step; i++) { RightShift(); }
 	}
 }
 
@@ -171,7 +204,7 @@ void SK_RMs::CompleteRead() {
 			cout << headValue[j] << " ";										//¦L¥X·í«e©Ò¦³Åª¼gÀY¤Uªº¤Q¶i¨î²Ö­p­È
 		}
 		cout << endl;
-		RMsRightShift();														//¥þÅé¥k²¾
+		RightShift();
 	}
 
 	for (j = 0; j < NofHead; j++) {											//Åª¨úÅª¼g½d³ò¤ºªº³Ì«á¤@bit«áµL»Ý¦A¦ì²¾
@@ -186,14 +219,13 @@ void SK_RMs::CompleteRead() {
 	cout << endl;
 
 	for (int i = 0; i < bufferSize; i++) {										//´_¦ì
-		RMsLeftShift();
+		LeftShift();
 	}
 	cout << endl;
 }
 
 int SK_RMs::HeadSelector(int idx) {
-	int interval = volumn / NofHead;
-	return (idx / interval);
+	return (idx / (volumn / NofHead));
 }
 
 bool SK_RMs::FindLocation(int headIdx, int bitIdx, int step) {	//¿ï¾Ü²¾°Ê¤è¦V¡A¨Ã¦^¶Ç´_¦ì¤è¦V
@@ -207,12 +239,55 @@ bool SK_RMs::FindLocation(int headIdx, int bitIdx, int step) {	//¿ï¾Ü²¾°Ê¤è¦V¡A¨
 	}
 }
 
-void SK_RMs::InsertL(int value, int idx) {
+void SK_RMs::InsertL(int idx, int value) {
 	bitset<4> b(value);
-	int headNumber = HeadSelector(idx);
-	int step = abs(headTable[headNumber] - idx);
-	bool dir = FindLocation(headTable[headNumber], idx, step);
+	int headIdx = headTable[HeadSelector(idx)];
+	int step = abs(headIdx - idx);
+	bool dir = FindLocation(headIdx, idx, step);
 	for (int i = 0; i < trackNumber; i++) {	//½ü¹M¨C¤@±ø°O¾ÐÅé¼g¤J
-		RMs[i].BitWrite(b[i]);
+		RMs[i].InsertL(headIdx, b[i]);
 	}
+	Shift_Multi(dir, step);//´_¦ì
+}
+
+void SK_RMs::InsertR(int idx, int value) {
+	bitset<4> b(value);
+	int headIdx = headTable[HeadSelector(idx)];
+	int step = abs(headIdx - idx);
+	bool dir = FindLocation(headIdx, idx, step);
+	for (int i = 0; i < trackNumber; i++) {	//½ü¹M¨C¤@±ø°O¾ÐÅé¼g¤J
+		RMs[i].InsertR(headIdx, b[i]);
+	}
+	Shift_Multi(dir, step);//´_¦ì
+}
+
+void SK_RMs::DeleteL(int idx) {
+	int headIdx = headTable[HeadSelector(idx)];
+	int step = abs(headIdx - idx);
+	bool dir = FindLocation(headIdx, idx, step);
+	for (int i = 0; i < trackNumber; i++) {	//½ü¹M¨C¤@±ø°O¾ÐÅé¼g¤J
+		RMs[i].DeleteL(headIdx);
+	}
+	Shift_Multi(dir, step);//´_¦ì
+}
+
+void SK_RMs::DeleteR(int idx) {
+	int headIdx = headTable[HeadSelector(idx)];
+	int step = abs(headIdx - idx);
+	bool dir = FindLocation(headIdx, idx, step);
+	for (int i = 0; i < trackNumber; i++) {	//½ü¹M¨C¤@±ø°O¾ÐÅé¼g¤J
+		RMs[i].DeleteR(headIdx);
+	}
+	Shift_Multi(dir, step);//´_¦ì
+}
+
+void SK_RMs::Update(int idx, int value) {
+	bitset<4> b(value);
+	int headIdx = headTable[HeadSelector(idx)];
+	int step = abs(headIdx - idx);
+	bool dir = FindLocation(headIdx, idx, step);
+	for (int i = 0; i < trackNumber; i++) {	//½ü¹M¨C¤@±ø°O¾ÐÅé¼g¤J
+		RMs[i].Update(headIdx, b[i]);
+	}
+	Shift_Multi(dir, step);//´_¦ì
 }
